@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Průvodce krajem – Digitální otevřené dny KÚSK</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#005BD4;--blue-dk:#004AAD;--blue-lt:#EBF3FF;
+  --bg:#F7F9FB;--card:#fff;--tx:#1A1C20;--mu:#5A6473;
+  --bd:#D8DEE8;--r:12px;--f:'Public Sans',system-ui,sans-serif
+}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ── HEADER ── */
+.sh{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--bd);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hb{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--f);font-size:14px;font-weight:600;color:var(--blue);padding:6px 10px;border-radius:8px;transition:background .15s;min-width:64px}
+.hb:hover{background:var(--blue-lt)}.hb:disabled{opacity:0;pointer-events:none}
+.ht{font-size:14px;font-weight:700;color:var(--blue);background:var(--blue-lt);padding:5px 14px;border-radius:100px;border:1px solid #C2D9F8}
+.ht.urgent{background:#FFF3E0;color:#B25E09;border-color:#F5C97A}
+.hbadges{display:flex;align-items:center;gap:4px}
+.bs{width:28px;height:28px;border-radius:50%;background:var(--bg);border:2px solid var(--bd);transition:all .3s;font-size:14px;display:flex;align-items:center;justify-content:center}
+.bs.earned{background:var(--blue-lt);border-color:var(--blue)}
+
+/* ── WELCOME ── */
+#sw{background:#fff;justify-content:center;align-items:center;padding:40px 24px;text-align:center}
+.wlogo{display:inline-flex;align-items:center;gap:8px;margin-bottom:40px;padding:8px 18px;border:1.5px solid var(--bd);border-radius:100px;font-size:13px;font-weight:600;color:var(--mu)}
+.wico{width:88px;height:88px;background:var(--blue-lt);border:2px solid #C2D9F8;border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;animation:fl 3s ease-in-out infinite}
+.wico svg{width:44px;height:44px}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.wtitle{font-size:30px;font-weight:800;color:var(--tx);line-height:1.15;letter-spacing:-.03em;margin-bottom:10px}
+.wtitle em{font-style:normal;color:var(--blue)}
+.wsub{font-size:15px;color:var(--mu);line-height:1.6;max-width:340px;margin:0 auto 28px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:36px}
+.pill{background:var(--bg);border:1.5px solid var(--bd);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--mu);font-weight:500}
+.qrb{background:var(--bg);border:1.5px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:32px;display:inline-block}
+.qri{background:#fff;border-radius:8px;padding:14px;margin-bottom:10px;text-align:center;border:1px solid var(--bd)}
+.qrg{display:grid;grid-template-columns:repeat(7,14px);gap:2px;margin:0 auto 8px;width:fit-content}
+.qrc{width:14px;height:14px;border-radius:2px}
+.qrd{background:var(--tx)}.qrl{background:#eee}
+.qrurl{font-size:11px;color:var(--mu)}
+.qrlb{font-size:11px;color:var(--mu)}
+.btnp{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:14px 32px;font-family:var(--f);font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;width:100%;max-width:320px}
+.btnp:hover{background:var(--blue-dk);transform:translateY(-1px)}
+
+/* ── MAP ── */
+#sm{background:var(--bg)}
+.mhero{background:var(--blue);padding:24px 20px 28px;color:#fff;text-align:center}
+.mhero h1{font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-.02em}
+.mhero p{font-size:13px;color:rgba(255,255,255,.75)}
+.mprog{background:rgba(255,255,255,.2);border-radius:6px;height:5px;margin:14px 0 0;overflow:hidden}
+.mprogf{height:100%;background:#fff;border-radius:6px;transition:width .5s ease;width:0%}
+
+/* Dept karty s diorámaty */
+.dgrid{padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dc{background:#fff;border:1.5px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:all .2s;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.dc:hover{border-color:var(--blue);box-shadow:0 4px 18px rgba(0,91,212,.14);transform:translateY(-3px)}
+.dc.done{border-color:var(--blue);box-shadow:0 4px 18px rgba(0,91,212,.14)}
+.dc-img-wrap{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--blue-lt);position:relative}
+.dc-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform .35s ease;display:block}
+.dc:hover .dc-img-wrap img{transform:scale(1.04)}
+.ddi{position:absolute;top:8px;right:8px;width:24px;height:24px;background:var(--blue);border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;box-shadow:0 2px 6px rgba(0,91,212,.4);z-index:2}
+.dc.done .ddi{display:flex}
+.dc-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.dn{font-size:12px;font-weight:700;color:var(--tx);line-height:1.3}
+.ds{font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px;background:var(--bg);color:var(--mu);border:1px solid var(--bd);align-self:flex-start}
+.dc.done .ds{background:var(--blue);color:#fff;border-color:var(--blue)}
+.dc-icon-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px}
+.mfoot{padding:12px 16px 32px}
+.btnc{width:100%;padding:15px;border-radius:var(--r);background:var(--blue);color:#fff;border:none;font-family:var(--f);font-size:16px;font-weight:700;cursor:pointer;transition:all .2s}
+.btnc:disabled{background:var(--bd);color:var(--mu);cursor:not-allowed}
+.btnc:not(:disabled):hover{background:var(--blue-dk);transform:translateY(-1px)}
+
+/* ── DEPT DETAIL ── */
+#sd{background:var(--bg)}
+
+/*
+  Úvodní infografika: panel se přizpůsobí přirozeným rozměrům PNG.
+  Žádná fixní výška – obrázek určuje výšku sám (width:100%, height:auto).
+*/
+.dhead{padding:16px 16px 0}
+
+.dhinfo-wrap{
+  width:100%;
+  border-radius:var(--r);
+  overflow:hidden;
+  margin-bottom:16px;
+  border:1.5px solid var(--bd);
+  background:var(--bg);
+  /* panel se roztáhne na přirozenou výšku infografiky */
+}
+.dhinfo-wrap img{
+  width:100%;
+  height:auto;       /* ← klíčové: přirozená výška dle poměru stran PNG */
+  display:block;
+}
+
+/* Záhlaví odboru pod infografikou */
+.dtag{display:inline-flex;align-items:center;gap:6px;background:var(--blue-lt);color:var(--blue);border-radius:100px;padding:4px 12px;font-size:12px;font-weight:600;margin-bottom:8px;border:1px solid #C2D9F8}
+.dh2{font-size:20px;font-weight:800;color:var(--tx);margin-bottom:6px;letter-spacing:-.02em}
+.dint{font-size:14px;line-height:1.65;color:var(--mu);margin-bottom:14px}
+
+.isec{padding:0 16px 14px}
+.icard{background:#fff;border:1.5px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:10px}
+.icard h3{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:8px}
+.ilist{list-style:none;display:flex;flex-direction:column;gap:5px}
+.ilist li{font-size:13px;color:var(--mu);padding-left:18px;position:relative;line-height:1.5}
+.ilist li::before{content:'';position:absolute;left:4px;top:7px;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+
+/* ── TASK ── */
+.tsec{padding:0 16px 90px}
+.tcard{background:#fff;border:1.5px solid var(--blue);border-radius:var(--r);padding:18px}
+.tlbl{display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px}
+.tq{font-size:15px;font-weight:700;color:var(--tx);margin-bottom:14px;line-height:1.4}
+.topts{display:flex;flex-direction:column;gap:8px}
+.topt{background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;padding:12px 14px;font-size:14px;font-weight:500;color:var(--tx);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+.topt:hover:not(.locked){border-color:var(--blue);background:var(--blue-lt)}
+.topt.selected{border-color:var(--blue);background:var(--blue-lt);color:var(--blue)}
+.topt.correct{border-color:#1A7A4A;background:#F0FAF4;color:#1A7A4A}
+.topt.wrong{border-color:#C9353F;background:#FFF5F5;color:#C9353F}
+.topt.locked{cursor:default}
+.onum{width:26px;height:26px;border-radius:6px;background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:all .15s}
+.topt.selected .onum{background:var(--blue);color:#fff}
+.topt.correct .onum{background:#1A7A4A;color:#fff}
+.topt.wrong .onum{background:#C9353F;color:#fff}
+.tfb{margin-top:12px;padding:12px;border-radius:8px;font-size:13px;font-weight:500;display:none;line-height:1.5}
+.tfb.sc{background:#F0FAF4;color:#1A7A4A;border:1px solid #A3D9B8;display:block}
+.tfb.sw{background:#FFF5F5;color:#C9353F;border:1px solid #F5B8BB;display:block}
+.btnok{width:100%;margin-top:12px;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.btnok:disabled{background:var(--bd);color:var(--mu);cursor:not-allowed}
+.btnok:not(:disabled):hover{background:var(--blue-dk)}
+.btnn{width:100%;margin-top:8px;padding:13px;background:#fff;color:var(--blue);border:1.5px solid var(--blue);border-radius:var(--r);font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;display:none}
+.btnn:hover{background:var(--blue-lt)}
+
+/* ── CERT ── */
+#sc{background:var(--blue);flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center}
+.cico{width:80px;height:80px;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;animation:fl 3s ease-in-out infinite}
+.ctit{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:8px}
+.csub{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:24px;line-height:1.6}
+.ccard{background:#fff;border-radius:16px;padding:22px;margin-bottom:22px;width:100%;max-width:320px;text-align:left}
+.ccl{font-size:11px;font-weight:700;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.ccn{font-size:20px;font-weight:800;color:var(--tx);margin-bottom:4px}
+.cct{font-size:13px;color:var(--mu);margin-bottom:14px;line-height:1.5}
+.ccbs{display:flex;gap:6px;flex-wrap:wrap}
+.ccb{font-size:11px;background:var(--blue-lt);color:var(--blue);padding:3px 10px;border-radius:100px;font-weight:600;border:1px solid #C2D9F8}
+.rrow{display:flex;gap:12px;justify-content:center;margin-bottom:24px}
+.rbtn{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);border-radius:12px;padding:10px 18px;cursor:pointer;font-size:26px;transition:all .2s}
+.rbtn:hover,.rbtn.active{background:rgba(255,255,255,.25);border-color:#fff;transform:scale(1.1)}
+.ni{padding:13px 16px;border:1.5px solid rgba(255,255,255,.3);border-radius:var(--r);background:rgba(255,255,255,.12);color:#fff;font-family:var(--f);font-size:15px;font-weight:500;outline:none;width:100%;max-width:320px;margin-bottom:10px}
+.ni::placeholder{color:rgba(255,255,255,.45)}
+.ni:focus{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.18)}
+.btndl{width:100%;max-width:320px;padding:15px;border-radius:var(--r);background:#fff;color:var(--blue);border:none;font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.btndl:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
+.btnrs{width:100%;max-width:320px;padding:13px;border-radius:var(--r);background:transparent;color:rgba(255,255,255,.85);border:1.5px solid rgba(255,255,255,.35);font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:10px}
+.btnrs:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.6)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--tx);color:#fff;padding:11px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap;transition:transform .3s ease;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{background:#1A7A4A}
+.toast.warn{background:#B25E09}
+@keyframes bp{0%{transform:scale(0) rotate(-20deg);opacity:0}70%{transform:scale(1.3) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.bs.je{animation:bp .4s ease forwards}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="screen active" id="sw">
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:100%">
+    <div class="wlogo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      KÚSK · Středočeský kraj
+    </div>
+    <div class="wico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#005BD4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+    </div>
+    <h1 class="wtitle">Průvodce<br><em>krajem pro školy</em></h1>
+    <p class="wsub">Interaktivní sešit – 45 minut, 5 odborů, žádná registrace.</p>
+    <div class="pills">
+      <span class="pill">📱 Mobile-first</span><span class="pill">⏱ 45 min.</span>
+      <span class="pill">🎓 Střední školy</span><span class="pill">📍 Středočeský kraj</span>
+    </div>
+    <div class="qrb">
+      <div class="qri"><div class="qrg" id="qrg"></div><div class="qrurl">kusk.pruvodce.cz/trida</div></div>
+      <div class="qrlb">Naskenujte QR kód na tabletu/projektoru</div>
+    </div>
+    <button class="btnp" id="btn-start">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Spustit průvodce
+    </button>
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="screen" id="sm">
+  <div class="sh">
+    <button class="hb" id="map-back" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Zpět
+    </button>
+    <div class="ht" id="map-timer">⏱ 45:00</div>
+    <div class="hbadges" id="map-badges"></div>
+  </div>
+  <div class="mhero">
+    <h1>Mapa odborů KÚSK</h1>
+    <p>Projdi všech 5 odborů a získej certifikát</p>
+    <div class="mprog"><div class="mprogf" id="map-fill"></div></div>
+  </div>
+  <div class="dgrid" id="dept-grid"></div>
+  <div class="mfoot"><button class="btnc" id="btn-cert" disabled>Získat certifikát →</button></div>
+</div>
+
+<!-- DEPT DETAIL -->
+<div class="screen" id="sd">
+  <div class="sh">
+    <button class="hb" id="dept-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Zpět
+    </button>
+    <div class="ht" id="dept-timer">⏱ 45:00</div>
+    <div class="hbadges" id="dept-badges"></div>
+  </div>
+  <div id="dept-content"></div>
+</div>
+
+<!-- CERT -->
+<div class="screen" id="sc">
+  <div class="cico">🎓</div>
+  <h1 class="ctit">Výborně! Hotovo!</h1>
+  <p class="csub">Prošli jste všemi 5 odbory<br>Středočeského kraje.</p>
+  <div class="ccard">
+    <div class="ccl">KÚSK · Středočeský kraj · 2025</div>
+    <div class="ccn" id="cert-name">Student/ka</div>
+    <div class="cct">úspěšně absolvoval/a Digitální otevřené dny Krajského úřadu Středočeského kraje.</div>
+    <div class="ccbs">
+      <span class="ccb">🚌 Mobilita</span><span class="ccb">🎓 Školství</span>
+      <span class="ccb">🏥 Zdravotnictví</span><span class="ccb">🛣️ Doprava</span><span class="ccb">🤝 Sociální věci</span>
+    </div>
+  </div>
+  <p style="color:rgba(255,255,255,.7);font-size:13px;margin-bottom:14px">Jak se ti líbila hodina?</p>
+  <div class="rrow">
+    <button class="rbtn" id="r0">😔</button><button class="rbtn" id="r1">😐</button>
+    <button class="rbtn" id="r2">😊</button><button class="rbtn" id="r3">🤩</button>
+  </div>
+  <input class="ni" id="student-name" placeholder="Tvoje jméno (nepovinné)">
+  <button class="btndl" id="btn-dl">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Stáhnout certifikát (PDF)
+  </button>
+  <button class="btnrs" id="btn-restart">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+    Hrát znovu
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── SVG ikony – fallback pokud obrázek selže ──
+var ICONS={
+  mobility:'<svg viewBox="0 0 24 24" fill="none" stroke="#005BD4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+  skolstvi:'<svg viewBox="0 0 24 24" fill="none" stroke="#005BD4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  zdravotnictvi:'<svg viewBox="0 0 24 24" fill="none" stroke="#005BD4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+  doprava:'<svg viewBox="0 0 24 24" fill="none" stroke="#005BD4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><path d="M5 3a2 2 0 00-2 2v14c0 1.1.9 2 2 2h14a2 2 0 002-2V5a2 2 0 00-2-2H5z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+  socialni:'<svg viewBox="0 0 24 24" fill="none" stroke="#005BD4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>'
+};
+
+/*
+  Struktura složek (relativní cesty od index.html):
+    dioramata/   – JPEG diorámata pro kartičky na mapě
+    infografiky/ – PNG infografiky pro detail každého odboru
+*/
+var D=[
+  {id:'mobility', e:'🚌', n:'Odbor veřejné mobility', t:'Doprava a spoje', ik:'mobility',
+   diorama:   'dioramata/mobilita.jpeg',
+   infografika:'infografiky/mobilita.png',
+   intro:'Odbor veřejné mobility zajišťuje dopravní obslužnost Středočeského kraje. Spravuje autobusové, vlakové i vodní linky a koordinuje ekologické trendy v dopravě.',
+   facts:['Provoz přes 3 000 autobusových linek v kraji','Vydávání licencí a schvalování jízdních řádů','Rozvoj cyklostezek a P+R parkovišť','Spolupráce s IDSK a systémem PID'],
+   q:'Který úkol PATŘÍ do agendy Odboru veřejné mobility?',
+   o:['Vydávání řidičských průkazů','Schvalování jízdních řádů autobusů','Stavba dálnic','Přidělování sociálních dávek'],
+   c:1, ex:'Správně! Schvalování jízdních řádů je klíčová agenda odboru. Stavba dálnic patří státu.'},
+
+  {id:'skolstvi', e:'🎓', n:'Odbor školství', t:'Vzdělávání', ik:'skolstvi',
+   diorama:   'dioramata/skolstvi.jpeg',
+   infografika:'infografiky/skolstvi.png',
+   intro:'Odbor školství zajišťuje chod vzdělávací soustavy v kraji – od financování škol přes EU fondy až po podporu sportu a talentů.',
+   facts:['Správa a financování krajských i obecních škol','Uznávání zahraničního vzdělání a školský rejstřík','Fond sportu a olympiády dětí a mládeže','Strategický rozvoj sítě škol z EU fondů'],
+   q:'Co je hlavní činností Odboru školství Středočeského kraje?',
+   o:['Stavba nových škol','Správa a financování sítě škol v regionu','Přijímání žáků na SŠ','Výuka na krajských školách'],
+   c:1, ex:'Správně! Odbor spravuje a financuje síť škol. Přijímání žáků řeší jednotlivé školy.'},
+
+  {id:'zdravotnictvi', e:'🏥', n:'Odbor zdravotnictví', t:'Zdraví a péče', ik:'zdravotnictvi',
+   diorama:   'dioramata/zdravotnictvi.jpeg',
+   infografika:'infografiky/zdravotnictvi.png',
+   intro:'Kraj zajišťuje komplexní síť zdravotní péče – od praktických lékařů přes záchrannou službu až po specializované léčebny.',
+   facts:['Síť lékařů, specialistů a lékáren v regionu','Záchranná a transportní zdravotní služba','Léčebny, dětské léčebny, lázně a ústředí','Koordinace psychologů a logopedů'],
+   q:'Co koordinuje Krajský úřad v oblasti zdravotnictví?',
+   o:['Pouze záchrannou službu','Pouze privátní kliniky','Komplexní síť od ambulantní péče po záchranku','Výhradně zubní ordinace'],
+   c:2, ex:'Správně! Kraj koordinuje celou síť – od ambulantní péče přes záchrannou službu po ústavy.'},
+
+  {id:'doprava', e:'🛣️', n:'Odbor dopravy', t:'Infrastruktura', ik:'doprava',
+   diorama:   'dioramata/doprava.jpeg',
+   infografika:'infografiky/doprava.png',
+   intro:'Odbor dopravy spravuje silniční síť II. a III. třídy, dozoruje nad silniční dopravou a zajišťuje agendu STK a autoškol.',
+   facts:['Správa silnic II. a III. třídy v kraji','Státní odborný dozor v nákladní dopravě','STK, autoškoly a školící střediska','4 stanice WIM – vážení vozidel za jízdy'],
+   q:'Jaké silnice spravuje Odbor dopravy Středočeského kraje?',
+   o:['Dálnice a silnice I. třídy','Silnice II. a III. třídy','Pouze místní komunikace','Všechny silnice bez výjimky'],
+   c:1, ex:'Správně! Kraj spravuje silnice II. a III. třídy. Dálnice jsou v gesci státu.'},
+
+  {id:'socialni', e:'🤝', n:'Odbor sociálních věcí', t:'Sociální služby', ik:'socialni',
+   diorama:   'dioramata/socialni.jpeg',
+   infografika:'infografiky/socialni.png',
+   intro:'Odbor zajišťuje správu sociálních služeb a ochranu dětí – metodická podpora, registrace poskytovatelů a kontrola standardů kvality.',
+   facts:['Registrace dle zákona č. 108/2006 Sb.','Zprostředkování osvojení a pěstounské péče','Inspekce standardů kvality sociálních služeb','4 oddělení: sociální práce, SPOD, ekonomika, koncepce'],
+   q:'Co je hlavní úkol Odboru sociálních věcí?',
+   o:['Vyplácení starobních důchodů','Správa sociálních služeb a ochrana dětí','Provoz domovů pro seniory','Správa nemocnic'],
+   c:1, ex:'Správně! Odbor spravuje sociální služby a ochraňuje děti. Důchody vyplácí ČSSZ.'}
+];
+
+var done={}, secs=2700, tiv=null, curIdx=-1, selOpt=-1, answered=false, retrying=false;
+function $$(id){return document.getElementById(id)}
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});$$(id).classList.add('active');window.scrollTo(0,0)}
+function toast(msg,t){var e=$$('toast');e.textContent=msg;e.className='toast show'+(t?' '+t:'');setTimeout(function(){e.className='toast'},3000)}
+
+function qr(){
+  var g=$$('qrg');
+  [1,1,1,0,1,1,1,1,0,0,0,0,1,0,1,0,1,1,0,0,1,1,1,0,0,1,0,1,1,0,1,0,0,0,1,0,1,0,1,0,0,1,1,0,0,1,0,0,1].forEach(function(b){
+    var c=document.createElement('div');c.className='qrc '+(b?'qrd':'qrl');g.appendChild(c)
+  })
+}
+
+function badges(cid){
+  var el=$$(cid);if(!el)return;el.innerHTML='';
+  D.forEach(function(d,i){
+    var s=document.createElement('div');s.className='bs'+(done[d.id]?' earned':'');
+    s.id=cid+'_b'+i;s.textContent=done[d.id]?d.e:'';el.appendChild(s)
+  })
+}
+function allBadges(){badges('map-badges');badges('dept-badges')}
+
+function progress(){
+  var n=Object.keys(done).length;
+  $$('map-fill').style.width=(n/D.length*100)+'%';
+  $$('btn-cert').disabled=n<D.length;
+  allBadges()
+}
+
+/* ── Mapa odborů – kartičky s diorámaty ── */
+function buildMap(){
+  var g=$$('dept-grid');g.innerHTML='';
+  D.forEach(function(d,i){
+    var isDone=done[d.id];
+    var c=document.createElement('div');
+    c.className='dc'+(isDone?' done':'');
+    c.innerHTML=
+      '<div class="ddi">✓</div>'
+      +'<div class="dc-img-wrap">'
+        +'<img src="'+d.diorama+'" alt="'+d.n+'" loading="lazy" '
+          +'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        +'<div class="dc-icon-fallback" style="display:none">'+d.e+'</div>'
+      +'</div>'
+      +'<div class="dc-body">'
+        +'<div class="dn">'+d.e+' '+d.n+'</div>'
+        +'<div class="ds">'+(isDone?'✓ Splněno':'Nevyplněno')+'</div>'
+      +'</div>';
+    (function(x){c.addEventListener('click',function(){openDept(x)})})(i);
+    g.appendChild(c)
+  });
+  progress()
+}
+
+/* ── Detail odboru – infografika jako úvodní panel ── */
+function openDept(idx){
+  curIdx=idx;var d=D[idx];answered=!!done[d.id];selOpt=-1;retrying=false;
+  var fH=d.facts.map(function(f){return'<li>'+f+'</li>'}).join('');
+  var oH=d.o.map(function(o,i){
+    var cl='topt'+(answered?' locked'+(i===d.c?' correct':''):'');
+    return'<div class="'+cl+'" data-i="'+i+'"><div class="onum">'+String.fromCharCode(65+i)+'</div>'+o+'</div>'
+  }).join('');
+
+  /*
+    Infografika – panel bez fixní výšky.
+    Obrázek (width:100%, height:auto) si sám určí výšku dle poměru stran PNG.
+    onerror zobrazí fallback s diorámou nebo emoji.
+  */
+  var infoPanel=
+    '<div class="dhinfo-wrap">'
+      +'<img src="'+d.infografika+'" alt="Infografika – '+d.n+'" '
+        +'onerror="this.parentNode.style.padding=\'20px\';this.parentNode.innerHTML=\'<div style=&quot;font-size:48px;text-align:center;padding:32px 0&quot;>'+d.e+'</div>\'">'
+    +'</div>';
+
+  $$('dept-content').innerHTML=
+    '<div class="dhead">'
+      +infoPanel
+      +'<div class="dtag">'+d.e+' '+d.t+'</div>'
+      +'<h2 class="dh2">'+d.n+'</h2>'
+      +'<p class="dint">'+d.intro+'</p>'
+    +'</div>'
+    +'<div class="isec"><div class="icard"><h3>Klíčové kompetence</h3><ul class="ilist">'+fH+'</ul></div></div>'
+    +'<div class="tsec"><div class="tcard">'
+      +'<div class="tlbl">Úkol odboru</div>'
+      +'<div class="tq">'+d.q+'</div>'
+      +'<div class="topts" id="topts">'+oH+'</div>'
+      +'<div class="tfb'+(answered?' sc':'')+'" id="tfb">'+(answered?'✓ '+d.ex:'')+'</div>'
+      +'<button class="btnok" id="bok" disabled>'+(answered?'✓ Splněno':'Potvrdit odpověď')+'</button>'
+      +'<button class="btnn" id="bnext" style="display:'+(answered?'block':'none')+'">← Zpět na mapu</button>'
+    +'</div></div>';
+
+  $$('topts').querySelectorAll('.topt').forEach(function(o){
+    if(!answered)o.addEventListener('click',function(){pick(parseInt(o.getAttribute('data-i')))})
+  });
+  $$('bok').addEventListener('click',confirm);
+  $$('bnext').addEventListener('click',function(){show('sm');buildMap()});
+  show('sd');allBadges()
+}
+
+function pick(i){
+  if(answered||retrying)return;selOpt=i;
+  $$('topts').querySelectorAll('.topt').forEach(function(o,j){o.classList.toggle('selected',j===i)});
+  $$('bok').disabled=false
+}
+
+function confirm(){
+  if(selOpt<0||answered||retrying)return;
+  var d=D[curIdx],ok=selOpt===d.c;answered=ok;
+  $$('topts').querySelectorAll('.topt').forEach(function(o,j){
+    o.classList.remove('selected');o.classList.add('locked');
+    if(j===d.c)o.classList.add('correct');
+    else if(j===selOpt&&!ok)o.classList.add('wrong')
+  });
+  var fb=$$('tfb');
+  if(ok){
+    fb.className='tfb sc';fb.innerHTML='✓ '+d.ex;
+    $$('bok').disabled=true;$$('bok').textContent='✓ Splněno';$$('bnext').style.display='block';
+    if(!done[d.id]){
+      done[d.id]=true;allBadges();
+      var sl=$$('dept-badges_b'+curIdx);
+      if(sl){sl.classList.add('je');setTimeout(function(){sl.classList.remove('je')},600)}
+      toast('Odbor splněn! '+d.e,'success')
+    }
+  } else {
+    fb.className='tfb sw';fb.innerHTML='✗ Zkus znovu – odpověď je v textu výše.';
+    retrying=true;
+    setTimeout(function(){
+      answered=false;retrying=false;selOpt=-1;
+      $$('topts').querySelectorAll('.topt').forEach(function(o){o.classList.remove('correct','wrong','selected','locked')});
+      fb.className='tfb';fb.innerHTML='';$$('bok').disabled=true;
+      toast('Zkus to znovu!','warn')
+    },2500)
+  }
+}
+
+function startTimer(){
+  tiv=setInterval(function(){
+    if(secs>0)secs--;
+    var m=String(Math.floor(secs/60)).padStart(2,'0'),s=String(secs%60).padStart(2,'0');
+    var txt='⏱ '+m+':'+s,u=secs<300;
+    ['map-timer','dept-timer'].forEach(function(id){
+      var t=$$(id);if(t){t.textContent=txt;t.className='ht'+(u?' urgent':'')}
+    })
+  },1000)
+}
+
+qr();
+$$('btn-start').addEventListener('click',function(){show('sm');buildMap();startTimer()});
+$$('btn-cert').addEventListener('click',function(){show('sc')});
+$$('dept-back').addEventListener('click',function(){show('sm');buildMap()});
+$$('student-name').addEventListener('input',function(){$$('cert-name').textContent=this.value||'Student/ka'});
+['r0','r1','r2','r3'].forEach(function(id){
+  $$(id).addEventListener('click',function(){
+    ['r0','r1','r2','r3'].forEach(function(r){$$(r).classList.remove('active')});
+    $$(id).classList.add('active');toast('Díky za hodnocení! 🙏','success')
+  })
+});
+$$('btn-dl').addEventListener('click',function(){toast('Certifikát by se stáhl jako PDF','success')});
+$$('btn-restart').addEventListener('click',function(){
+  done={};secs=2700;curIdx=-1;selOpt=-1;answered=false;retrying=false;
+  if(tiv){clearInterval(tiv);tiv=null}
+  $$('student-name').value='';$$('cert-name').textContent='Student/ka';
+  ['r0','r1','r2','r3'].forEach(function(r){$$(r).classList.remove('active')});
+  ['map-timer','dept-timer'].forEach(function(id){
+    var t=$$(id);if(t){t.textContent='⏱ 45:00';t.className='ht'}
+  });
+  show('sw')
+});
+</script>
+</body>
+</html>
